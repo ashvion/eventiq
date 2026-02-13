@@ -109,12 +109,16 @@ Once your site is live and the database is connected, run these commands in your
    DATABASE_URL="your_url_here" python manage.py migrate
    ```
 3. **Create Admin**:
-   ```bash
-   DATABASE_URL="your_url_here" python manage.py createsuperuser
-   ```
+1.  **Get your Database URL** from the Vercel/Neon dashboard.
+2.  **Run Migrations**:
+    ```bash
+    DATABASE_URL="your_url_here" python manage.py migrate
+    ```
+3.  **Create Admin**:
+    ```bash
+    DATABASE_URL="your_url_here" python manage.py createsuperuser
+    ```
 
 Now you can log in at `https://your-project.vercel.app/admin`!
 
 ---
-
-*Developed by Karthik — Premium Event Management Solution*
