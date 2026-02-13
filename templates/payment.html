@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment — EventIQ{% endblock %}
+
+{% block content %}
+
+<!-- Custom Styles for Payment -->
+<style>
+    .page-hero {
+        position: relative;
+        padding: 4rem 0;
+        background: #000;
+        overflow: hidden;
+        border-bottom: 1px solid var(--card-border);
+    }
+
+    .page-hero-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+    }
+
+    .page-hero-bg {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.2;
+    }
+
+    .page-hero-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+    }
+
+    .page-title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #888888 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .summary-card {
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .card input[type="text"] {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: var(--text-main) !important;
+    }
+
+    .card input[type="text"]::placeholder {
+        color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+    #processing-overlay {
+        background: rgba(0, 0, 0, 0.9) !important;
+        backdrop-filter: blur(15px);
+    }
+
+    #processing-overlay .card {
+        background: #0f0f0f !important;
+        border-color: var(--card-border) !important;
+        color: white !important;
+    }
+</style>
+
+<section class="page-hero">
+    <div class="page-hero-image">
+        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1600&q=80" alt="Payment background"
+            class="page-hero-bg">
+    </div>
+    <div class="container page-hero-content">
+        <span class="page-badge">💳 Secure Payment</span>
+        <h1 class="page-title">Complete Your Booking</h1>
+        <p class="page-subtitle">Demo payment gateway - No real charges</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div style="max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+
+            <!-- Payment Form -->
+            <div class="card">
+                <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Payment Details</h2>
+
+                <form method="post" action="{% url 'process_payment' booking.ticket_id %}">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="card_number">Card Number</label>
+                        <input id="card_number" name="card_number" type="text" placeholder="4242 4242 4242 4242"
+                            value="4242 4242 4242 4242" maxlength="19">
+                        <small style="color: var(--text-muted); font-size: 0.85rem;">Demo: Use any 16-digit
+                            number</small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expiry">Expiry Date</label>
+                            <input id="expiry" name="expiry" type="text" placeholder="MM/YY" value="12/26"
+                                maxlength="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="cvv">CVV</label>
+                            <input id="cvv" name="cvv" type="text" placeholder="123" value="123" maxlength="3">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cardholder">Cardholder Name</label>
+                        <input id="cardholder" name="cardholder" type="text" placeholder="John Doe"
+                            value="{{ booking.name }}">
+                    </div>
+
+                    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--card-border);">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <span style="font-size: 1.1rem; font-weight: 600;">Total Amount</span>
+                            <span style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">${{ booking.event.price }}</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-large" style="width: 100%;">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="margin-right: 0.5rem;">
+                                <path d="M16 6L7.5 14.5L4 11" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            Pay ${{ booking.event.price }} Now
+                        </button>
+
+                        <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+                            🔒 This is a demo payment. No real transaction will occur.
+                        </p>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Booking Summary -->
+            <div class="card summary-card">
+                <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Booking Summary</h2>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Event</div>
+                    <div style="font-size: 1.1rem; font-weight: 600;">{{ booking.event.title }}</div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Date & Location
+                    </div>
+                    <div style="font-size: 0.95rem;">📅 {{ booking.event.date }}</div>
+                    <div style="font-size: 0.95rem;">📍 {{ booking.event.location }}</div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Attendee</div>
+                    <div style="font-size: 0.95rem;">{{ booking.name }}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">{{ booking.email }}</div>
+                </div>
+
+
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Booking Code
+                    </div>
+                    <div style="font-size: 1rem; font-weight: 600; font-family: monospace; color: var(--primary);">{{ booking.short_code }}</div>
+                </div>
+
+                <div style="padding-top: 1.5rem; border-top: 1px solid var(--card-border);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Ticket Price</span>
+                        <span>${{ booking.event.price }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span>Processing Fee</span>
+                        <span>$0.00</span>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <span>Total</span>
+                        <span>${{ booking.event.price }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Processing Overlay -->
+<div id="processing-overlay"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 9999; align-items: center; justify-content: center;">
+    <div class="card" style="padding: 3rem; text-align: center; max-width: 400px;">
+        <div id="loading-state">
+            <div class="spinner" style="margin: 0 auto 1.5rem;"></div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Processing Payment...</h3>
+            <p style="color: var(--text-muted);">Please wait while we verify your payment</p>
+        </div>
+
+        <div id="success-state" style="display: none;">
+            <div
+                style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                    <path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #10b981;">Payment Verified!</h3>
+            <p style="color: var(--text-muted);">Generating your ticket...</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media (max-width: 768px) {
+        .container>div {
+            grid-template-columns: 1fr !important;
+        }
+    }
+
+    .spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid #f3f4f6;
+        border-top: 4px solid var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    #processing-overlay {
+        display: none;
+    }
+
+    #processing-overlay.active {
+        display: flex !important;
+    }
+</style>
+
+<script>
+    document.querySelector('form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const overlay = document.getElementById('processing-overlay');
+        const loadingState = document.getElementById('loading-state');
+        const successState = document.getElementById('success-state');
+
+        // Show overlay with loading state
+        overlay.classList.add('active');
+
+        // Simulate processing (1.5 seconds)
+        setTimeout(() => {
+            // Hide loading, show success
+            loadingState.style.display = 'none';
+            successState.style.display = 'block';
+
+            // After showing success (1.5 seconds), submit the form
+            setTimeout(() => {
+                // Actually submit the form
+                e.target.submit();
+            }, 1500);
+        }, 1500);
+    });
+</script>
+
+{% endblock %}

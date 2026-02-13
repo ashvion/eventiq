@@ -1,0 +1,480 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome — EventIQ{% endblock %}
+
+{% block content %}
+
+
+
+
+<style>
+  .aesthetic-landing {
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 6rem 0;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .landing-content {
+    max-width: 900px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .badge-premium {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    background: rgba(127, 86, 217, 0.1);
+    border: 1px solid rgba(127, 86, 217, 0.2);
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--primary);
+    margin-bottom: 2rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .title-hero {
+    font-size: clamp(3rem, 10vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 2rem;
+    letter-spacing: -0.04em;
+    color: var(--text-main);
+  }
+
+  .title-glow {
+    background: linear-gradient(135deg, #7F56D9 0%, #14B8A6 50%, #EC4899 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    display: inline-block;
+    padding: 0 0.2em;
+  }
+
+  .subtitle-hero {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    max-width: 650px;
+    margin: 0 auto 3.5rem auto;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  .cta-landing {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-premium-purple {
+    background: var(--primary);
+    color: white;
+    padding: 1.25rem 2.5rem;
+    border-radius: 99px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 10px 30px var(--primary-glow);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .btn-premium-purple:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px var(--primary-glow);
+    filter: brightness(1.1);
+  }
+
+  .btn-premium-outline {
+    padding: 1.25rem 2.5rem;
+    border: 1px solid var(--glass-border);
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border-radius: 99px;
+    font-weight: 700;
+    color: var(--text-main);
+    transition: all 0.3s ease;
+  }
+
+  .btn-premium-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--text-main);
+    transform: translateY(-5px);
+  }
+
+  /* Sections */
+  .section-minimal {
+    padding: 8rem 0;
+    position: relative;
+  }
+
+  .section-label {
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .section-title-minimal {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    margin-bottom: 4rem;
+  }
+
+  /* Cards Grid */
+  .cards-grid-minimal {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2.5rem;
+  }
+
+  .card-minimal {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 3.5rem 2.5rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-minimal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+    transform: translateX(-100%);
+    transition: 0.6s;
+  }
+
+  .card-minimal:hover::before {
+    transform: translateX(100%);
+  }
+
+  .card-minimal:hover {
+    transform: translateY(-15px);
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  }
+
+  .card-icon-minimal {
+    font-size: 3.5rem;
+    margin-bottom: 2rem;
+    display: block;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1));
+  }
+
+  .card-minimal h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+  }
+
+  .card-minimal p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .card-link-minimal {
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: gap 0.3s ease;
+  }
+
+  .card-minimal:hover .card-link-minimal {
+    gap: 0.75rem;
+  }
+
+  /* Features */
+  .feature-row-minimal {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    text-align: center;
+    padding: 3.5rem 2.5rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    transition: all 0.4s ease;
+  }
+
+  .feature-row-minimal:hover {
+    border-color: var(--teal);
+    background: rgba(255, 255, 255, 0.05);
+    transform: scale(1.02);
+  }
+
+  .feature-number {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--teal);
+    font-family: 'Space Mono', monospace;
+    background: rgba(20, 184, 166, 0.1);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+  }
+
+  .feature-content h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--text-main);
+  }
+
+  .feature-content p {
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* CTA Section */
+  .cta-content-minimal {
+    background: linear-gradient(135deg, #1A1033 0%, #0B0A10 100%);
+    border: 1px solid var(--glass-border);
+    border-radius: 40px;
+    padding: 6rem 4rem;
+    text-align: center;
+    color: white;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-content-minimal h2 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.03em;
+  }
+
+  .cta-content-minimal p {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-bottom: 4rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1s cubic-bezier(0.2, 1, 0.2, 1);
+  }
+
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Animation Delays */
+  .landing-content>* {
+    opacity: 0;
+    animation: fadeInUp 1s cubic-bezier(0.2, 1, 0.2, 1) forwards;
+  }
+
+  .badge-premium {
+    animation-delay: 0.2s;
+  }
+
+  .title-hero {
+    animation-delay: 0.4s;
+  }
+
+  .subtitle-hero {
+    animation-delay: 0.6s;
+  }
+
+  .cta-landing {
+    animation-delay: 0.8s;
+  }
+
+  @media (max-width: 768px) {
+    .section-minimal {
+      padding: 5rem 0;
+    }
+
+    .section-title-minimal {
+      font-size: 2.25rem;
+    }
+
+    .cta-content-minimal {
+      padding: 4rem 2rem;
+    }
+  }
+</style>
+
+
+
+<section class="aesthetic-landing">
+  <div class="landing-content">
+    <div class="badge-premium">Intelligent Event Management</div>
+    <h1 class="title-hero">
+      Experience the Future<br>
+      <span class="title-glow">of Digital Events</span>
+    </h1>
+    <p class="subtitle-hero">
+      Elevate your gatherings with our AI-powered ecosystem. Discover, book, and verify moments that matter with
+      cutting-edge technology.
+    </p>
+
+    <div class="cta-landing">
+      <a href="/events/" class="btn-premium-purple">
+        Get Started
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </a>
+      <a href="/booking/" class="btn-premium-outline">Explore More</a>
+    </div>
+  </div>
+</section>
+
+<!-- SHOWCASE SECTION -->
+<section class="section-minimal">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">OUR SERVICES</span>
+      <h2 class="section-title-minimal">What We Offer</h2>
+    </div>
+
+    <div class="cards-grid-minimal">
+      <div class="card-minimal reveal">
+        <div class="card-icon-minimal">🎤</div>
+        <h3>Conferences</h3>
+        <p>Professional networking events that connect industry leaders and innovators.</p>
+        <a href="/events/" class="card-link-minimal">Explore →</a>
+      </div>
+
+      <div class="card-minimal reveal">
+        <div class="card-icon-minimal">🎵</div>
+        <h3>Concerts</h3>
+        <p>Live music experiences featuring world-class artists and performances.</p>
+        <a href="/events/" class="card-link-minimal">Explore →</a>
+      </div>
+
+      <div class="card-minimal reveal">
+        <div class="card-icon-minimal">💡</div>
+        <h3>Workshops</h3>
+        <p>Interactive learning sessions designed to enhance skills and knowledge.</p>
+        <a href="/events/" class="card-link-minimal">Explore →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES SECTION -->
+<section class="section-minimal" style="background: rgba(255, 255, 255, 0.01);">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">TECHNOLOGY FIRST</span>
+      <h2 class="section-title-minimal">Why Choose EventIQ</h2>
+    </div>
+
+    <div class="cards-grid-minimal">
+      <div class="feature-row-minimal reveal">
+        <div class="feature-number">1</div>
+        <div class="feature-content">
+          <h3>QR Code Ticketing</h3>
+          <p>Every booking generates a unique QR code for secure, contactless ticket verification at events.</p>
+        </div>
+      </div>
+
+      <div class="feature-row-minimal reveal">
+        <div class="feature-number">2</div>
+        <div class="feature-content">
+          <h3>AI Assistant</h3>
+          <p>Meet Chug - your AI-powered companion that helps you find events matching your interests using Gemini AI.
+          </p>
+        </div>
+      </div>
+
+      <div class="feature-row-minimal reveal">
+        <div class="feature-number">3</div>
+        <div class="feature-content">
+          <h3>Expense Tracker</h3>
+          <p>Built-in dashboard to monitor your monthly and yearly spending alongside your event bookings.</p>
+        </div>
+      </div>
+
+      <div class="feature-row-minimal reveal">
+        <div class="feature-number">4</div>
+        <div class="feature-content">
+          <h3>Dual Verification</h3>
+          <p>Verify tickets using either QR codes or short alphanumeric codes for flexible entry management.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA SECTION -->
+<section class="section-minimal">
+  <div class="container">
+    <div class="cta-content-minimal reveal">
+      <h2>Ready to Experience the Future?</h2>
+      <p>Join thousands of event enthusiasts who trust EventIQ for seamless digital experiences.</p>
+      <a href="/events/" class="btn-premium-purple">
+        Get Started Now
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+{% endblock %}

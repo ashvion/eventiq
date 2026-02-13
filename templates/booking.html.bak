@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking — EventIQ{% endblock %}
+
+{% block content %}
+
+<!-- Custom Styles for Booking Page -->
+<style>
+    body {
+        background: #0a0a0a !important;
+    }
+
+    .site-header {
+        background: rgba(0, 0, 0, 0.95) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .nav-brand {
+        background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%) !important;
+        -webkit-background-clip: text !important;
+        background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+    }
+
+    .nav-link {
+        color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    .nav-link:hover {
+        color: #ffffff !important;
+    }
+</style>
+
+<!-- Page Hero -->
+<section class="booking-hero">
+    <div class="booking-hero-bg">
+        <div class="noise-overlay"></div>
+    </div>
+    <div class="container booking-hero-content">
+        <span class="booking-badge">🎫 SECURE YOUR SPOT</span>
+        <h1 class="booking-title">Book an Event</h1>
+        <p class="booking-subtitle">Reserve your place at amazing events</p>
+    </div>
+</section>
+
+<section class="booking-section">
+    <div class="container">
+        <div class="booking-form-card">
+            {% if message %}
+            <div class="alert-dark {% if message.type == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                {{ message.text }}
+            </div>
+            {% endif %}
+
+            <form method="post" class="form-dark">
+                {% csrf_token %}
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="name">Your Name</label>
+                        <input id="name" name="name" required value="{{ request.POST.name|default_if_none:'' }}"
+                            placeholder="Enter your full name">
+                    </div>
+                    <div class="form-field">
+                        <label for="email">Email Address</label>
+                        <input id="email" name="email" type="email" required
+                            value="{{ request.POST.email|default_if_none:'' }}" placeholder="your@email.com">
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="event">Select Event</label>
+                    <select id="event" name="event" required>
+                        <option value="">Choose an event...</option>
+                        {% for ev in events %}
+                        <!-- REALLY FIXED NOW -->
+                        <option value="{{ ev.id }}" {% if ev.id|stringformat:"s"==request.GET.event_id or
+                            ev.id|stringformat:"s"==request.POST.event %}selected{% endif %}>{{ ev.title }} — {{ ev.date
+                            }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit-dark">
+                    Confirm Booking
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<style>
+    .booking-hero {
+        background: #000000;
+        min-height: 40vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        padding: 5rem 0 3rem;
+    }
+
+    .booking-hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .noise-overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .booking-hero-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .booking-badge {
+        display: inline-block;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        margin-bottom: 1.5rem;
+        padding: 0.5rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .booking-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: #ffffff;
+        margin-bottom: 1rem;
+        letter-spacing: -0.04em;
+    }
+
+    .booking-subtitle {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .booking-section {
+        background: #0f0f0f;
+        padding: 5rem 0;
+        min-height: 60vh;
+    }
+
+    .booking-form-card {
+        max-width: 700px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 3rem;
+        animation: fadeIn 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .alert-dark {
+        padding: 1rem 1.5rem;
+        margin-bottom: 2rem;
+        border-radius: 0;
+        font-weight: 500;
+    }
+
+    .alert-success {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .alert-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .form-dark {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .form-field label {
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .form-field input,
+    .form-field select {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        padding: 1rem 1.25rem;
+        font-size: 1rem;
+        border-radius: 0;
+        transition: all 0.3s ease;
+    }
+
+    .form-field input::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    .form-field input:focus,
+    .form-field select:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+    }
+
+    .form-field select {
+        cursor: pointer;
+    }
+
+    .btn-submit-dark {
+        background: #ffffff;
+        color: #000000;
+        border: none;
+        padding: 1.25rem 2.5rem;
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .btn-submit-dark:hover {
+        background: #e5e5e5;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-submit-dark svg {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-submit-dark:hover svg {
+        transform: translateX(4px);
+    }
+
+    @media (max-width: 768px) {
+        .booking-title {
+            font-size: 2.5rem;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .booking-form-card {
+            padding: 2rem 1.5rem;
+        }
+    }
+</style>
+
+{% endblock %}

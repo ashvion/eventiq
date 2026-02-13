@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Ticket — EventIQ{% endblock %}
+
+{% block content %}
+<style>
+    .ticket-page-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+    }
+
+    .ticket-container-premium {
+        width: 100%;
+        max-width: 480px;
+        position: relative;
+        animation: fadeInUp 1s cubic-bezier(0.2, 1, 0.2, 1);
+    }
+
+    .ticket-main-glass {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 40px;
+        overflow: hidden;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.05);
+    }
+
+    .ticket-header-modern {
+        background: #18181b;
+        color: white;
+        padding: 2.5rem;
+        text-align: center;
+    }
+
+    .ticket-header-modern h2 {
+        font-size: 0.75rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+        margin: 0;
+        opacity: 0.6;
+    }
+
+    .ticket-body-modern {
+        padding: 3rem;
+    }
+
+    .event-info-box {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .event-title-premium {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #18181b;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.5rem;
+        line-height: 1.1;
+    }
+
+    .event-meta-premium {
+        color: #71717a;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .qr-container-premium {
+        background: white;
+        padding: 2rem;
+        border-radius: 32px;
+        margin: 0 auto 3rem auto;
+        width: fit-content;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .short-code-box {
+        text-align: center;
+        padding: 1.5rem;
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 20px;
+        margin-bottom: 3rem;
+    }
+
+    .short-code-label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #a1a1aa;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .short-code-value {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #18181b;
+        letter-spacing: 0.1em;
+        font-family: 'Space Mono', monospace;
+    }
+
+    .attendee-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        text-align: left;
+    }
+
+    .info-label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: #a1a1aa;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.25rem;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: #18181b;
+    }
+
+    .ticket-footer-modern {
+        padding: 2.5rem;
+        border-top: 1px dashed rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .btn-print-premium {
+        background: #18181b;
+        color: white;
+        padding: 1.25rem 3rem;
+        border-radius: 99px;
+        font-weight: 800;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        width: 100%;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-print-premium:hover {
+        background: #000;
+        transform: scale(1.02);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media print {
+
+        .global-aesthetic-bg,
+        .btn-print-premium,
+        .back-link {
+            display: none !important;
+        }
+
+        body {
+            background: white;
+        }
+
+        .ticket-main-glass {
+            box-shadow: none;
+            border: 1px solid #ccc;
+            backdrop-filter: none;
+            background: white;
+        }
+    }
+</style>
+
+<div class="ticket-page-section">
+    <div class="ticket-container-premium">
+        <div class="ticket-main-glass">
+            <div class="ticket-header-modern">
+                <h2>OFFICIAL ADMISSION TICKET</h2>
+            </div>
+
+            <div class="ticket-body-modern">
+                <div class="event-info-box">
+                    <h1 class="event-title-premium">{{ booking.event.title }}</h1>
+                    <p class="event-meta-premium">{{ booking.event.date|date:"D, M d, Y" }} | {{ booking.event.location
+                        }}</p>
+                </div>
+
+                <div class="qr-container-premium">
+                    <img src="data:image/png;base64,{{ qr_image }}" alt="QR Code" style="width: 180px; height: 180px;">
+                </div>
+
+                <div class="short-code-box">
+                    <span class="short-code-label">TICKET VERIFICATION CODE</span>
+                    <span class="short-code-value">{{ booking.short_code }}</span>
+                </div>
+
+                <div class="attendee-info-grid">
+                    <div>
+                        <div class="info-label">Attendee</div>
+                        <div class="info-value">{{ booking.name }}</div>
+                    </div>
+                    <div>
+                        <div class="info-label">Seats</div>
+                        <div class="info-value">{{ booking.seats }} PASSES</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ticket-footer-modern">
+                <button onclick="window.print()" class="btn-print-premium">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    Print / Download Ticket
+                </button>
+            </div>
+        </div>
+
+        <div class="back-link" style="text-align: center; margin-top: 2rem;">
+            <a href="{% url 'profile' %}" style="color: #71717a; text-decoration: none; font-weight: 700;">&larr; Back
+                to Profile</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

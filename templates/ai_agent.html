@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Budget Planner - EventIQ{% endblock %}
+
+{% block content %}
+
+<!-- Custom Styles -->
+<style>
+    .ai-agent-page {
+        position: relative;
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .container.section {
+        background: transparent !important;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-top: 6rem;
+        padding-bottom: 4rem;
+    }
+
+    .section-title {
+        color: var(--text-main) !important;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+    }
+
+    .section-subtitle {
+        color: var(--text-muted) !important;
+        font-weight: 500;
+    }
+
+    .chat-header-aesthetic {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .chat-header-aesthetic h2 {
+        margin: 0;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    #chat-history {
+        background: transparent !important;
+        border: none !important;
+        padding: 2rem !important;
+    }
+
+    .btn-aesthetic-primary {
+        background: var(--primary);
+        color: white;
+        border-radius: 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-aesthetic-primary:hover {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(127, 86, 217, 0.3);
+    }
+
+    .btn-aesthetic-secondary {
+        background: var(--glass);
+        border: 1px solid var(--glass-border);
+        color: var(--text-main);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+    }
+
+    .chat-input-container {
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.02);
+        border-top: 1px solid var(--glass-border);
+    }
+</style>
+</style>
+
+<div class="ai-agent-page">
+    <div class="ai-bg-container"></div>
+
+    <div class="container section">
+        <div class="hero-inner" style="margin: 0 auto 3.5rem auto; text-align: center;">
+            <p class="badge-premium" style="display: inline-block; margin-bottom: 1rem;">
+                INTELLIGENT CONCIERGE</p>
+            <h1 class="section-title" style="font-size: 3.5rem;">Your AI Ally, <span class="title-glow">Chug</span></h1>
+            <p class="section-subtitle" style="font-size: 1.1rem; max-width: 600px; margin: 1rem auto;">Seamlessly
+                navigating your EventIQ experience with precision and grace.</p>
+        </div>
+
+        <!-- Single Centered AI Chat Panel -->
+        <div style="max-width: 1000px; margin: 0 auto; width: 100%;">
+            <div class="glass-panel" style="display: flex; flex-direction: column; min-height: 700px;">
+                <div class="chat-header-aesthetic"
+                    style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div
+                            style="width: 12px; height: 12px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);">
+                        </div>
+                        <h2 style="font-size: 1.25rem; letter-spacing: -0.02em;">Chug Assist</h2>
+                    </div>
+                </div>
+
+                <div id="chat-history"
+                    style="flex-grow: 1; min-height: 450px; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div class="chat-msg bot" style="align-self: flex-start; max-width: 85%;">
+                        <div
+                            style="background: var(--glass); padding: 1.25rem 1.5rem; border-radius: 20px 20px 20px 0; border: 1px solid var(--glass-border); font-size: 1rem; color: var(--text-main); backdrop-filter: blur(10px);">
+                            Hello! I'm Chug, your dedicated AI advisor for EventIQ. I'm here to ensure your experience
+                            is flawless.
+                            <br><br>
+                            How can I assist you today?
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding: 2rem; background: rgba(255,255,255,0.4); border-top: 1px solid rgba(0,0,0,0.05);">
+                    <form id="chat-form" style="display: flex; gap: 1rem; align-items: center;">
+                        <div style="flex-grow: 1; position: relative;">
+                            <input type="text" id="chat-input" placeholder="How can I help you today?" required>
+                        </div>
+
+                        <button type="button" id="mic-btn" class="btn-aesthetic-secondary"
+                            style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; padding: 0;">
+                            <svg id="mic-icon" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke-linecap="round" stroke-linejoin="round" />
+                                <line x1="12" y1="19" x2="12" y2="23" stroke-linecap="round" stroke-linejoin="round" />
+                                <line x1="8" y1="23" x2="16" y2="23" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+
+                        <button type="submit" class="btn-aesthetic-primary"
+                            style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; padding: 0; outline: none; border: none;">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+    /* Chat Content Styling */
+    .chat-content p {
+        margin-bottom: 0.5rem;
+        color: var(--text-main);
+    }
+
+    .chat-content p:last-child {
+        margin-bottom: 0;
+    }
+
+    .chat-content ul,
+    .chat-content ol {
+        margin-left: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-main);
+    }
+
+    .chat-content li {
+        margin-bottom: 0.25rem;
+        color: var(--text-main);
+    }
+
+    .chat-content strong {
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    .chat-content code {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 0.85em;
+        color: var(--teal);
+    }
+</style>
+
+<script>
+    // --- Session Persistence Logic ---
+    const SESSION_KEY = 'eventiq_chat_history';
+
+    function loadChatHistory() {
+        const history = document.getElementById('chat-history');
+        const savedChat = sessionStorage.getItem(SESSION_KEY);
+
+        // Clear default welcome message if we have history
+        if (savedChat) {
+            const messages = JSON.parse(savedChat);
+            if (messages.length > 0) {
+                history.innerHTML = '';
+                messages.forEach(msg => {
+                    appendMessageToDOM(msg.role, msg.text, false); // false = don't save again
+                });
+            }
+        }
+    }
+
+    function saveChatHistory(role, text) {
+        let messages = [];
+        const savedChat = sessionStorage.getItem(SESSION_KEY);
+        if (savedChat) {
+            messages = JSON.parse(savedChat);
+        }
+        messages.push({ role: role, text: text });
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify(messages));
+    }
+
+    function appendMessageToDOM(role, text, save = true) {
+        const history = document.getElementById('chat-history');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `chat-msg ${role}`;
+
+        if (role === 'user') {
+            msgDiv.style.alignSelf = 'flex-end';
+            msgDiv.style.maxWidth = '85%';
+            msgDiv.innerHTML = `
+                <div style="background: var(--primary); color: white; padding: 1rem 1.5rem; border-radius: 20px 20px 0 20px; font-size: 1rem; box-shadow: 0 10px 25px rgba(127, 86, 217, 0.2);">
+                    ${text}
+                </div>
+            `;
+        } else {
+            msgDiv.style.alignSelf = 'flex-start';
+            msgDiv.style.maxWidth = '85%';
+            // Parse Markdown for bot
+            const htmlContent = marked.parse(text);
+            msgDiv.innerHTML = `
+                <div class="chat-content" style="background: var(--glass); backdrop-filter: blur(10px); padding: 1.25rem 1.5rem; border-radius: 20px 20px 20px 0; border: 1px solid var(--glass-border); font-size: 1rem; line-height: 1.6; color: var(--text-main);">
+                    ${htmlContent}
+                </div>
+            `;
+        }
+
+        history.appendChild(msgDiv);
+        history.scrollTop = history.scrollHeight;
+
+        if (save) {
+            saveChatHistory(role, text);
+        }
+    }
+
+    // --- Voice Logic (STT & TTS) ---
+    const micBtn = document.getElementById('mic-btn');
+    const micIcon = document.getElementById('mic-icon');
+    const chatInput = document.getElementById('chat-input');
+    let isListening = false;
+
+    // TTS Setup
+    function speak(text) {
+        if (!window.speechSynthesis) return;
+
+        // Remove markdown or HTML tags for better speech
+        const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/[*#_`]/g, '');
+
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // STT Setup
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+            isListening = true;
+            micBtn.style.background = 'rgba(255, 0, 0, 0.2)';
+            micBtn.style.borderColor = 'rgba(255, 0, 0, 0.4)';
+            micIcon.style.color = '#ff4444';
+        };
+
+        recognition.onend = () => {
+            isListening = false;
+            micBtn.style.background = 'rgba(255, 255, 255, 0.05)';
+            micBtn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            micIcon.style.color = '#ffffff';
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            chatInput.value = transcript;
+            // Optionally auto-submit
+            document.getElementById('chat-form').dispatchEvent(new Event('submit'));
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            recognition.stop();
+        };
+
+        micBtn.addEventListener('click', () => {
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        });
+    } else {
+        micBtn.style.display = 'none'; // Hide if not supported
+    }
+
+    // Load history on page load
+    document.addEventListener('DOMContentLoaded', loadChatHistory);
+
+    document.getElementById('chat-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+        const history = document.getElementById('chat-history');
+
+        if (!message) return;
+
+        // User Message
+        appendMessageToDOM('user', message);
+        input.value = '';
+
+        // Add Loading State
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'chat-msg bot loading';
+        loadingDiv.style.alignSelf = 'flex-start';
+        loadingDiv.innerHTML = `<div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">Thinking...</div>`;
+        history.appendChild(loadingDiv);
+        history.scrollTop = history.scrollHeight;
+
+        try {
+            const formData = new FormData();
+            formData.append('chat_message', message);
+            formData.append('mode', 'general');
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            const response = await fetch('', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            // Remove loading
+            history.removeChild(loadingDiv);
+
+            // Bot Response
+            if (data.reply) {
+                appendMessageToDOM('bot', data.reply);
+                speak(data.reply); // Voice output
+
+                // If there's ALSO a redirect, wait a bit then go
+                if (data.redirect) {
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 2000); // 2 second delay to read/hear confirmation
+                }
+            } else if (data.redirect) {
+                // Direct redirect if no text reply
+                window.location.href = data.redirect;
+            } else if (data.error) {
+                const errorDiv = document.createElement('div');
+                errorDiv.innerHTML = `<div style="color: red; font-size: 0.85rem;">Error: ${data.error}</div>`;
+                history.appendChild(errorDiv);
+            }
+
+        } catch (error) {
+            if (history.contains(loadingDiv)) {
+                history.removeChild(loadingDiv);
+            }
+            const errorDiv = document.createElement('div');
+            errorDiv.innerHTML = `<div style="color: red; font-size: 0.85rem;">Error connecting to AI.</div>`;
+            history.appendChild(errorDiv);
+        }
+
+        history.scrollTop = history.scrollHeight;
+    });
+</script>
+{% endblock %}

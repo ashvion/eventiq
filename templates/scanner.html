@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+
+{% block title %}Ticket Scanner — EventIQ{% endblock %}
+
+{% block content %}
+<!-- Include html5-qrcode library -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+    .scanner-section {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+    }
+
+    .scanner-card-premium {
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 40px;
+        padding: 3rem;
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.03);
+        animation: fadeInUp 1s cubic-bezier(0.2, 1, 0.2, 1);
+    }
+
+    .scanner-badge-premium {
+        display: inline-block;
+        padding: 0.6rem 1.2rem;
+        background: rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 99px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        margin-bottom: 1.5rem;
+        color: #18181b;
+    }
+
+    .scanner-title-premium {
+        font-size: 2.5rem;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        color: #18181b;
+        margin-bottom: 2rem;
+    }
+
+    .reader-container {
+        width: 100%;
+        margin-bottom: 2rem;
+        border-radius: 24px;
+        overflow: hidden;
+        background: #f8fafc;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        display: none;
+    }
+
+    #qr-reader {
+        width: 100%;
+    }
+
+    .input-wrapper-premium {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .input-premium {
+        width: 100%;
+        padding: 1.25rem 2rem;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 99px;
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #18181b;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        transition: all 0.3s ease;
+    }
+
+    .input-premium:focus {
+        border-color: #18181b;
+        box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.03);
+        outline: none;
+    }
+
+    .scanner-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+
+    .btn-verify-premium {
+        background: #18181b;
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 99px;
+        font-weight: 800;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-secondary-premium {
+        background: white;
+        color: #18181b;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-verify-premium:hover {
+        background: #000;
+        transform: translateY(-2px);
+    }
+
+    #status-message {
+        margin-top: 2rem;
+        padding: 2rem;
+        border-radius: 24px;
+        font-weight: 600;
+        display: none;
+    }
+
+    .status-success {
+        background: rgba(34, 197, 94, 0.1);
+        color: #16a34a;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .status-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<section class="scanner-section">
+    <div class="scanner-card-premium">
+        <span class="scanner-badge-premium">🔒 SECURITY TERMINAL</span>
+        <h1 class="scanner-title-premium">Ticket Scanner</h1>
+
+        <!-- Camera Container -->
+        <div id="qr-reader-container" class="reader-container">
+            <div id="qr-reader"></div>
+        </div>
+
+        <div class="input-wrapper-premium">
+            <input type="text" id="ticket-id-input" class="input-premium" placeholder="ID OR 6-CHAR CODE">
+        </div>
+
+        <div class="scanner-actions">
+            <button class="btn-verify-premium" onclick="verifyTicket()">
+                Verify Code
+            </button>
+            <button class="btn-verify-premium btn-secondary-premium" onclick="toggleCamera()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                Camera
+            </button>
+            <button class="btn-verify-premium btn-secondary-premium"
+                onclick="document.getElementById('hidden-qr-input').click()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Upload
+            </button>
+        </div>
+
+        <!-- Hidden file input for uploading images -->
+        <input type="file" id="hidden-qr-input" accept="image/*" style="display: none;"
+            onchange="handleFileUpload(this)">
+
+        <div id="status-message"></div>
+
+        <p style="color: #71717a; font-size: 0.85rem; margin-top: 2rem;">
+            Scan QR code via camera, upload a ticket image, or enter the code manually.
+        </p>
+    </div>
+</section>
+
+<script>
+    let html5QrCode = null;
+    const scannerId = "qr-reader";
+
+    function onScanSuccess(decodedText, decodedResult) {
+        // decodedText will contain the ticket_id
+        document.getElementById('ticket-id-input').value = decodedText;
+        stopScanner();
+        verifyTicket();
+    }
+
+    function onScanFailure(error) {
+        // handle scan failure, usually better to ignore and keep scanning
+    }
+
+    function stopScanner() {
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().then(() => {
+                document.getElementById('qr-reader-container').style.display = 'none';
+            });
+        }
+    }
+
+    function toggleCamera() {
+        const container = document.getElementById('qr-reader-container');
+
+        if (html5QrCode && html5QrCode.isScanning) {
+            stopScanner();
+        } else {
+            container.style.display = 'block';
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode(scannerId);
+            }
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                onScanSuccess,
+                onScanFailure
+            ).catch(err => {
+                console.error("Camera Error:", err);
+                alert("Could not access camera. Please check permissions.");
+                container.style.display = 'none';
+            });
+        }
+    }
+
+    function handleFileUpload(input) {
+        if (input.files && input.files[0]) {
+            const imageFile = input.files[0];
+            const html5QrCodeUpload = new Html5Qrcode("qr-reader");
+
+            // Temporary show container to use the element
+            const container = document.getElementById('qr-reader-container');
+            container.style.display = 'block';
+
+            html5QrCodeUpload.scanFile(imageFile, true)
+                .then(decodedText => {
+                    document.getElementById('ticket-id-input').value = decodedText;
+                    container.style.display = 'none';
+                    verifyTicket();
+                })
+                .catch(err => {
+                    console.error("Upload Error:", err);
+                    alert("No valid QR code found in the image.");
+                    container.style.display = 'none';
+                });
+        }
+    }
+
+    function verifyTicket() {
+        const ticketId = document.getElementById('ticket-id-input').value.trim();
+        const statusDiv = document.getElementById('status-message');
+
+        if (!ticketId) return;
+
+        // Reset UI
+        statusDiv.style.display = 'block';
+        statusDiv.className = '';
+        statusDiv.innerHTML = 'Verifying...';
+
+        fetch(`/verify-ticket/${ticketId}/`)
+            .then(response => response.json())
+            .then(data => {
+                statusDiv.className = '';
+                if (data.valid) {
+                    statusDiv.classList.add('status-success');
+                    statusDiv.innerHTML = `
+                        <div style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem;">ACCESS GRANTED</div>
+                        <div style="font-size: 1.1rem; opacity: 0.9;">${data.attendee}</div>
+                        <div style="font-size: 0.9rem; opacity: 0.7; margin-top: 0.5rem;">${data.event}</div>
+                    `;
+                } else {
+                    statusDiv.classList.add('status-error');
+                    statusDiv.innerHTML = `
+                        <div style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem;">INVALID TICKET</div>
+                        <div style="font-size: 1.1rem; opacity: 0.9;">No record found for this code.</div>
+                    `;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                statusDiv.className = 'status-error';
+                statusDiv.innerHTML = 'System Connection Error';
+            });
+    }
+</script>
+{% endblock %}

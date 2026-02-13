@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile — EventIQ{% endblock %}
+
+{% block content %}
+
+<!-- Custom Styles for Profile -->
+<style>
+    .profile-hero-section {
+        padding: 6rem 0 3rem 0;
+        text-align: center;
+        position: relative;
+    }
+
+    .profile-title-premium {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        margin-bottom: 1rem;
+        color: var(--text-main);
+    }
+
+    .profile-grid-modern {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        gap: 3rem;
+        margin-bottom: 8rem;
+        align-items: start;
+    }
+
+    .user-card-premium {
+        background: var(--glass) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border) !important;
+        border-radius: 40px;
+        padding: 3.5rem 2.5rem;
+        text-align: center;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 1s cubic-bezier(0.2, 1, 0.2, 1);
+    }
+
+    .avatar-premium {
+        width: 120px;
+        height: 120px;
+        background: var(--primary);
+        color: white;
+        font-size: 3rem;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 40px;
+        margin: 0 auto 2rem auto;
+        transform: rotate(-3deg);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .user-name-premium {
+        font-size: 1.75rem;
+        font-weight: 900;
+        color: var(--text-main);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+    }
+
+    .user-handle-premium {
+        font-size: 1rem;
+        color: var(--teal);
+        font-weight: 600;
+        margin-bottom: 2rem;
+    }
+
+    .user-info-list {
+        text-align: left;
+        margin-bottom: 2.5rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--glass-border);
+    }
+
+    .info-item-premium {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .info-icon {
+        color: var(--primary);
+    }
+
+    .booking-card-premium {
+        background: var(--glass) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border) !important;
+        border-radius: 24px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.4s cubic-bezier(0.2, 1, 0.2, 1);
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .booking-card-premium:hover {
+        transform: translateX(10px);
+        background: rgba(255, 255, 255, 0.05) !important;
+        border-color: var(--primary) !important;
+    }
+
+    .date-badge-premium {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        border-radius: 16px;
+        min-width: 80px;
+        text-align: center;
+    }
+
+    .date-badge-premium .day {
+        display: block;
+        font-size: 1.75rem;
+        font-weight: 900;
+        line-height: 1;
+    }
+
+    .date-badge-premium .month {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        opacity: 0.8;
+    }
+
+    .booking-content-modern {
+        flex-grow: 1;
+    }
+
+    .booking-title-modern {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 0.25rem;
+        letter-spacing: -0.01em;
+    }
+
+    .booking-meta-modern {
+        display: flex;
+        gap: 1.5rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .section-header-premium h2 {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--text-main);
+        letter-spacing: -0.02em;
+        margin-bottom: 2rem;
+    }
+
+    .btn-logout-premium {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid var(--glass-border);
+        background: var(--glass);
+        border-radius: 99px;
+        color: var(--text-main);
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: block;
+        text-align: center;
+    }
+
+    .btn-logout-premium:hover {
+        background: #ef4444;
+        border-color: #ef4444;
+        color: white;
+    }
+
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 992px) {
+        .profile-grid-modern {
+            grid-template-columns: 1fr;
+        }
+
+        .user-card-premium {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+    }
+</style>
+
+<section class="profile-hero-section">
+    <div class="container">
+        <h1 class="profile-title-premium">My <span class="title-glow">Profile</span></h1>
+    </div>
+</section>
+
+<div class="container">
+    <div class="profile-grid-modern">
+        <!-- Sidebar -->
+        <div class="user-card-premium">
+            <div class="avatar-premium">
+                {{ user.first_name|first }}{{ user.last_name|first }}
+            </div>
+            <h2 class="user-name-premium">{{ user.first_name }} {{ user.last_name }}</h2>
+            <p class="user-handle-premium">@{{ user.username }}</p>
+
+            <div class="user-info-list">
+                <div class="info-item-premium">
+                    <svg class="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                        <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                    {{ user.email }}
+                </div>
+                <div class="info-item-premium">
+                    <svg class="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                    Verified Member
+                </div>
+            </div>
+
+            <a href="{% url 'logout' %}" class="btn-logout-premium">Logout Account</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="bookings-section-modern">
+            <div class="section-header-premium">
+                <h2>My Bookings</h2>
+            </div>
+
+            {% if bookings %}
+            <div class="booking-list-modern">
+                {% for booking in bookings %}
+                <a href="{% url 'booking_confirmation' booking.ticket_id %}" class="booking-card-premium">
+                    <div class="date-badge-premium">
+                        <span class="day">{{ booking.event.date|date:"d" }}</span>
+                        <span class="month">{{ booking.event.date|date:"M" }}</span>
+                    </div>
+                    <div class="booking-content-modern">
+                        <h3 class="booking-title-modern">{{ booking.event.title }}</h3>
+                        <div class="booking-meta-modern">
+                            <span>📍 {{ booking.event.location }}</span>
+                            <span>🎫 Ref: #{{ booking.short_code }}</span>
+                        </div>
+                    </div>
+                    <div class="booking-arrow">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3">
+                            <path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div
+                style="background: var(--glass); border: 2px dashed var(--glass-border); border-radius: 32px; padding: 6rem; text-align: center; backdrop-filter: blur(10px);">
+                <div style="font-size: 4rem; margin-bottom: 2rem;">🎟️</div>
+                <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-bottom: 1rem;">No
+                    bookings yet</h3>
+                <p
+                    style="color: var(--text-muted); margin-bottom: 2.5rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+                    Start your journey by exploring the hottest events in your city.</p>
+                <a href="{% url 'events' %}" class="btn-logout-premium"
+                    style="width: fit-content; margin: 0 auto; padding-left: 3rem; padding-right: 3rem;">Browse
+                    Events</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

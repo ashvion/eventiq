@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking — EventIQ{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<!-- Custom Styles for Booking Page -->
+<style>
+    .booking-hero {
+        background: transparent;
+        min-height: 40vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        padding: 6rem 0 3rem;
+    }
+
+    .booking-hero-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+    }
+
+    .booking-title {
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 900;
+        color: var(--text-main);
+        margin-bottom: 1rem;
+        letter-spacing: -0.04em;
+    }
+
+    .booking-subtitle {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+    }
+
+    .booking-section {
+        padding: 4rem 0 8rem;
+    }
+
+    .booking-form-card {
+        background: var(--glass) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid var(--glass-border) !important;
+        padding: 4rem 3rem;
+        border-radius: 24px !important;
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+    }
+
+    .form-field label {
+        color: var(--text-main) !important;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        display: block;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .alert-dark {
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    /* Dark theme for select dropdowns */
+    select {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: var(--text-main) !important;
+        padding: 0.875rem 1rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    select:hover {
+        border-color: rgba(255, 255, 255, 0.25) !important;
+        background: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 3px rgba(127, 86, 217, 0.1);
+    }
+
+    /* Style for dropdown options */
+    select option {
+        background: #1a1a1a !important;
+        color: #ffffff !important;
+        padding: 0.75rem;
+    }
+
+    select option:hover {
+        background: #2a2a2a !important;
+    }
+
+    /* Input fields dark theme */
+    input[type="text"],
+    input[type="email"] {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: var(--text-main) !important;
+    }
+
+    input[type="text"]::placeholder,
+    input[type="email"]::placeholder {
+        color: rgba(255, 255, 255, 0.4) !important;
+    }
+</style>
+
+<!-- Page Hero -->
+<section class="booking-hero">
+    <div class="container booking-hero-content">
+        <h1 class="booking-title">Book an <span class="title-glow">Event</span></h1>
+        <p class="booking-subtitle">Reserve your place at amazing events</p>
+    </div>
+</section>
+
+<section class="booking-section">
+    <div class="container">
+        <div class="booking-form-card">
+            {% if message %}
+            <div class="alert-dark {% if message.type == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                {{ message.text }}
+            </div>
+            {% endif %}
+
+            <form method="post" class="form-dark">
+                {% csrf_token %}
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="name">Your Name</label>
+                        <input id="name" name="name" required value="{{ request.POST.name|default_if_none:'' }}"
+                            placeholder="Enter your full name">
+                    </div>
+                    <div class="form-field">
+                        <label for="email">Email Address</label>
+                        <input id="email" name="email" type="email" required
+                            value="{{ request.POST.email|default_if_none:'' }}" placeholder="your@email.com">
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="event">Select Event</label>
+                    <select id="event" name="event" required>
+                        <option value="">Choose an event...</option>
+                        {% for ev in events %}
+                        <option value="{{ ev.id }}">{{ ev.title }} — {{ ev.date }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label for="seats">Number of Seats</label>
+                    <select id="seats" name="seats" required>
+                        <option value="1">1 Seat</option>
+                        <option value="2">2 Seats</option>
+                    </select>
+                    <small style="color: #71717a; font-size: 0.85rem; margin-top: 0.5rem;">Maximum 2
+                        seats per booking</small>
+                </div>
+
+                <button type="submit" class="btn-submit-dark">
+                    Confirm Booking
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('auto_fill') === 'true') {
+            const eventId = urlParams.get('event_id');
+            const eventTitle = urlParams.get('event_title');
+            const name = urlParams.get('name');
+            const email = urlParams.get('email');
+            const seats = urlParams.get('seats');
+
+            console.log("--- VISIBLE AUTO-FILL START ---");
+            console.log("Input Parameters:", { eventId, eventTitle, name, email, seats });
+
+            const eventSelect = document.getElementById('event');
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const seatsSelect = document.getElementById('seats');
+            const form = document.querySelector('.form-dark');
+
+            function performSelection(selectEl, queryId, queryTitle, label) {
+                if (!selectEl) {
+                    console.error(`${label} dropdown NOT found!`);
+                    return false;
+                }
+
+                const qId = (queryId || "").toString().toLowerCase().trim();
+                const qTitle = (queryTitle || "").toString().toLowerCase().trim();
+                console.log(`Searching for ${label}: ID="${qId}", Title="${qTitle}"`);
+
+                const candidates = [qId, qTitle].filter(c => c !== "");
+
+                for (let i = 0; i < selectEl.options.length; i++) {
+                    const opt = selectEl.options[i];
+                    const optVal = opt.value.toLowerCase().trim();
+                    const optText = opt.text.toLowerCase().trim();
+
+                    for (const q of candidates) {
+                        // Check value match, exact text match, prefix match, or partial match
+                        if (optVal === q || optText === q || optText.startsWith(q) || optText.includes(q)) {
+                            selectEl.selectedIndex = i;
+                            selectEl.value = opt.value;
+                            console.log(`Matched ${label}: Candidate "${q}" matched option [${i}] (value="${opt.value}", text="${opt.text}")`);
+                            selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+                            return true;
+                        }
+                    }
+                }
+                console.error(`FAILED: No match for ${label} with candidates:`, candidates);
+                return false;
+            }
+
+            // Execute auto-fill with slight delay
+            setTimeout(() => {
+                if (name) nameInput.value = name;
+                if (email) emailInput.value = email;
+
+                const eventOk = performSelection(eventSelect, eventId, eventTitle, "Event");
+
+                // Seats handling - default to 1 if not provided or invalid
+                let seatsOk = false;
+                if (seatsSelect) {
+                    const s = (seats || "1").toString().trim();
+                    seatsSelect.value = s;
+                    if (seatsSelect.value === s) {
+                        seatsOk = true;
+                        console.log(`Auto-selected seats: ${s}`);
+                        seatsSelect.style.border = "2px solid #7F56D9";
+                        seatsSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                    } else {
+                        // Fallback to 1
+                        seatsSelect.value = "1";
+                        seatsOk = true;
+                        console.warn(`Requested seats "${s}" not found, falling back to 1`);
+                    }
+                }
+
+                console.log("Selection results:", { eventOk, seatsOk });
+
+                if (eventOk && seatsOk) {
+                    setTimeout(() => {
+                        const submitBtn = document.querySelector('.btn-submit-dark');
+                        if (submitBtn) {
+                            console.log("Triggering confirmation click...");
+                            submitBtn.style.transform = 'scale(1.05)';
+                            submitBtn.style.boxShadow = '0 0 20px rgba(127, 86, 217, 0.7)';
+
+                            setTimeout(() => {
+                                submitBtn.click(); // Better than form.submit() as it triggers click handlers
+                            }, 800);
+                        } else {
+                            console.log("Submit button not found, falling back to form.submit()");
+                            form.submit();
+                        }
+                    }, 500);
+                } else {
+                    console.warn("Automation incomplete. Please select missing fields manually.");
+                    if (eventOk) eventSelect.style.border = "2px solid #7F56D9";
+                }
+            }, 600);
+        }
+    });
+</script>
+
+{% endblock %}

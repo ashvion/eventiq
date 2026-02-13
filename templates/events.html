@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block title %}Events — EventIQ{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<!-- Custom Styles for Events Page -->
+<style>
+  .events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+
+  .event-card-dark {
+    background: var(--glass) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 20px !important;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .event-card-dark:hover {
+    transform: translateY(-8px) !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  .event-image-wrapper {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+  }
+
+  .event-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .event-card-dark:hover .event-img {
+    transform: scale(1.1);
+  }
+
+  .event-date-tag {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(127, 86, 217, 0.9);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    z-index: 2;
+  }
+
+  .event-content-dark {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .event-title-dark {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-main) !important;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .event-meta-dark {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .meta-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--text-muted) !important;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .event-desc-dark {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    overflow: hidden;
+    flex-grow: 1;
+  }
+
+  .btn-event-dark {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    padding: 0.8rem;
+    border-radius: 12px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .btn-event-dark:hover {
+    filter: brightness(1.1);
+    transform: scale(1.02);
+  }
+
+  .empty-state-dark {
+    text-align: center;
+    padding: 8rem 0;
+  }
+
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+  }
+</style>
+
+<!-- Page Hero -->
+<section style="padding: 6rem 0 3rem; text-align: center;">
+  <div class="container">
+    <h1 class="events-title"
+      style="font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 900; color: var(--text-main); margin-bottom: 1rem; letter-spacing: -0.04em;">
+      Upcoming <span class="title-glow">Events</span>
+    </h1>
+    <p style="font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto;">Browse through our curated
+      collection of exciting events</p>
+  </div>
+</section>
+
+<section class="events-section">
+  <div class="container">
+    {% if events %}
+    <div class="events-grid">
+      {% for ev in events %}
+      <article class="event-card-dark">
+        <div class="event-image-wrapper">
+          {% if ev.image %}
+          <img src="{{ ev.image.url }}" alt="{{ ev.title }}" class="event-img">
+          {% else %}
+          <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80" alt="{{ ev.title }}"
+            class="event-img">
+          {% endif %}
+          <div class="event-img-overlay"></div>
+          <span class="event-date-tag">{{ ev.date }}</span>
+        </div>
+        <div class="event-content-dark">
+          <h3 class="event-title-dark">{{ ev.title }}</h3>
+          <div class="event-meta-dark">
+            <span class="meta-tag">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <path
+                  d="M8 8.5C9.38071 8.5 10.5 7.38071 10.5 6C10.5 4.61929 9.38071 3.5 8 3.5C6.61929 3.5 5.5 4.61929 5.5 6C5.5 7.38071 6.61929 8.5 8 8.5Z"
+                  stroke="currentColor" stroke-width="1.5" />
+                <path d="M13 6C13 10.5 8 14 8 14C8 14 3 10.5 3 6C3 3.23858 5.23858 1 8 1C10.7614 1 13 3.23858 13 6Z"
+                  stroke="currentColor" stroke-width="1.5" />
+              </svg>
+              {{ ev.location|default:'Online' }}
+            </span>
+            <span class="meta-tag">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <path
+                  d="M8 1V15M4.5 5H10.5C11.5 5 12 5.5 12 6.5C12 7.5 11.5 8 10.5 8H5.5C4.5 8 4 8.5 4 9.5C4 10.5 4.5 11 5.5 11H11.5"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+              ${{ ev.price }}
+            </span>
+            <span class="meta-tag">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                <rect x="2" y="4" width="12" height="8" rx="2" stroke="currentColor" stroke-width="1.5" />
+              </svg>
+              {{ ev.seats }} Seats
+            </span>
+          </div>
+          <p class="event-desc-dark">{{ ev.description|default:'Join us for an amazing event experience!' }}</p>
+          <a class="btn-event-dark" href="{% url 'event_details' ev.id %}">
+            Book Now
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state-dark">
+      <div class="empty-icon">📅</div>
+      <h3>No Events Available</h3>
+      <p>Check back soon for exciting upcoming events!</p>
+      {% if user.is_authenticated and user.is_superuser %}
+      <a href="/events/create/" class="btn-event-dark">Create an Event</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+
+
+{% endblock %}
