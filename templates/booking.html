@@ -193,7 +193,7 @@
             const email = urlParams.get('email');
             const seats = urlParams.get('seats');
 
-            console.log("--- VISIBLE AUTO-FILL START ---");
+            console.log("--- ROBUST AUTO-FILL START ---");
             console.log("Input Parameters:", { eventId, eventTitle, name, email, seats });
 
             const eventSelect = document.getElementById('event');
@@ -208,8 +208,16 @@
                     return false;
                 }
 
-                const qId = (queryId || "").toString().toLowerCase().trim();
+                let qId = (queryId || "").toString().toLowerCase().trim();
                 const qTitle = (queryTitle || "").toString().toLowerCase().trim();
+
+                // Handle float-like IDs (e.g., "10.0" -> "10")
+                if (qId.includes('.') && !isNaN(parseFloat(qId))) {
+                    const intPart = Math.floor(parseFloat(qId)).toString();
+                    console.log(`Float-like ID detected: "${qId}". Adding integer part "${intPart}" as candidate.`);
+                    qId = intPart;
+                }
+
                 console.log(`Searching for ${label}: ID="${qId}", Title="${qTitle}"`);
 
                 const candidates = [qId, qTitle].filter(c => c !== "");
@@ -234,44 +242,47 @@
                 return false;
             }
 
-            // Execute auto-fill with slight delay
+            // Execute auto-fill with 1000ms delay
             setTimeout(() => {
                 if (name) nameInput.value = name;
                 if (email) emailInput.value = email;
 
                 const eventOk = performSelection(eventSelect, eventId, eventTitle, "Event");
 
-                // Seats handling - default to 1 if not provided or invalid
-                let seatsOk = false;
-                if (seatsSelect) {
-                    const s = (seats || "1").toString().trim();
-                    seatsSelect.value = s;
-                    if (seatsSelect.value === s) {
-                        seatsOk = true;
-                        console.log(`Auto-selected seats: ${s}`);
-                        seatsSelect.style.border = "2px solid #7F56D9";
-                        seatsSelect.dispatchEvent(new Event('change', { bubbles: true }));
-                    } else {
-                        // Fallback to 1
-                        seatsSelect.value = "1";
-                        seatsOk = true;
-                        console.warn(`Requested seats "${s}" not found, falling back to 1`);
-                    }
-                }
+                // Seats handling - using performSelection for consistency
+                const seatsOk = performSelection(seatsSelect, seats, seats + " Seat", "Seats");
 
                 console.log("Selection results:", { eventOk, seatsOk });
 
                 if (eventOk && seatsOk) {
+                    // Visual feedback for successful selection
+                    if (eventSelect) eventSelect.style.border = "2px solid #22c55e";
+                    if (nameInput) nameInput.style.border = "2px solid #22c55e";
+                    if (emailInput) emailInput.style.border = "2px solid #22c55e";
+                    if (seatsSelect) seatsSelect.style.border = "2px solid #22c55e";
+
                     setTimeout(() => {
                         const submitBtn = document.querySelector('.btn-submit-dark');
                         if (submitBtn) {
-                            console.log("Triggering confirmation click...");
+                            console.log("Attempting to click 'Confirm Booking'...");
                             submitBtn.style.transform = 'scale(1.05)';
-                            submitBtn.style.boxShadow = '0 0 20px rgba(127, 86, 217, 0.7)';
+                            submitBtn.style.boxShadow = '0 0 25px rgba(127, 86, 217, 0.9)';
+                            submitBtn.innerHTML = "Auto-Confirming...";
 
-                            setTimeout(() => {
-                                submitBtn.click(); // Better than form.submit() as it triggers click handlers
-                            }, 800);
+                            const clickAndVerify = () => {
+                                console.log("Triggering click event...");
+                                submitBtn.click();
+
+                                // Retry logic if no navigation happens within 3 seconds
+                                setTimeout(() => {
+                                    if (window.location.href.includes('/booking/')) {
+                                        console.warn("Redirection not detected, retrying click...");
+                                        submitBtn.click();
+                                    }
+                                }, 3000);
+                            };
+
+                            setTimeout(clickAndVerify, 1500); // 1.5 second delay before final click
                         } else {
                             console.log("Submit button not found, falling back to form.submit()");
                             form.submit();
@@ -281,7 +292,7 @@
                     console.warn("Automation incomplete. Please select missing fields manually.");
                     if (eventOk) eventSelect.style.border = "2px solid #7F56D9";
                 }
-            }, 600);
+            }, 1000);
         }
     });
 </script>

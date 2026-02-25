@@ -399,6 +399,10 @@ def ai_agent(request):
                  
                  USER CONTEXT:
                  - Auth User: {request.user.username if request.user.is_authenticated else "Guest"}
+                 
+                 TRIPLE-CHECK SEATS:
+                 - If the user says "two", "both", or a number > 1, you MUST pass seats=2.
+                 - If the user doesn't specify, you MUST ask. Defaulting to 1 is NOT allowed.
                  """
                  
                  # Setup model with tools
@@ -500,12 +504,16 @@ def book_event(event_id: int, seats: int, name: str, email: str):
 
     params = {
         'auto_fill': 'true',
-        'event_id': event_id,
+        'event_id': int(event_id),
         'event_title': event_title,
         'name': name,
         'email': email,
-        'seats': seats
+        'seats': int(seats)
     }
+    
+    print(f"\n--- TOOL CALL: book_event ---")
+    print(f"Event ID: {event_id} | Seats: {seats} | Name: {name} | Email: {email}")
+    print(f"Redirect URL: /booking/?{urlencode(params)}\n")
     
     redirect_url = f"/booking/?{urlencode(params)}"
     
