@@ -3,6 +3,14 @@
 import os
 import sys
 import dotenv
+import site
+
+# Force user site-packages to have higher priority than system packages
+user_site = site.getusersitepackages()
+if user_site in sys.path:
+    sys.path.remove(user_site)
+sys.path.insert(1, user_site)
+
 
 def main():
     """Run administrative tasks."""

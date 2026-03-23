@@ -399,6 +399,9 @@ def ai_agent(request):
                  
                  USER CONTEXT:
                  - Auth User: {request.user.username if request.user.is_authenticated else "Guest"}
+                 - User Name: {request.user.get_full_name() or request.user.username if request.user.is_authenticated else "Guest"}
+                 - User Email: {request.user.email if request.user.is_authenticated else "Not provided"}
+                 If Name and Email are available, use them automatically in book_event!
                  
                  TRIPLE-CHECK SEATS:
                  - If the user says "two", "both", or a number > 1, you MUST pass seats=2.
@@ -580,6 +583,9 @@ def chat_api(request):
                 
                 USER CONTEXT:
                 - Auth User: {request.user.username if request.user.is_authenticated else "Guest"}
+                - User Name: {request.user.get_full_name() or request.user.username if request.user.is_authenticated else "Guest"}
+                - User Email: {request.user.email if request.user.is_authenticated else "Not provided"}
+                If Name and Email are available, use them automatically in book_event!
                 """
             else: # general mode
                 system_instruction = f"""
@@ -601,6 +607,9 @@ def chat_api(request):
                 
                 USER CONTEXT:
                 - Auth User: {request.user.username if request.user.is_authenticated else "Guest"}
+                - User Name: {request.user.get_full_name() or request.user.username if request.user.is_authenticated else "Guest"}
+                - User Email: {request.user.email if request.user.is_authenticated else "Not provided"}
+                If Name and Email are available, use them automatically in book_event!
                 """
             
             api_key = getattr(settings, 'GEMINI_API_KEY', '') or os.environ.get('GEMINI_API_KEY', '')
